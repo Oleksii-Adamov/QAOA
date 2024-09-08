@@ -457,7 +457,7 @@ class QAOA:
                         np.argmin(self.Exp_sampled_p1, axis=None), self.Exp_sampled_p1.shape
                     )
                     angles0 = np.array(
-                        (self.gamma_grid[ind_Emin[1]], self.beta_grid[ind_Emin[0]])
+                        (self.gamma_grid[ind_Emin[1]], self.beta_grid[ind_Emin[0]]))
 
             else:
                 gamma = self.get_gamma(self.current_depth)
