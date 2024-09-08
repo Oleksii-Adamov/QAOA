@@ -518,7 +518,7 @@ class QAOA:
                 self.parameterized_circuit, sampler=Sampler()
             )
             opt = self.optimizer[0](**self.optimizer[1])
-        res = opt.minimize(self.loss, x0=angles0)
+        res = opt.minimize(self.loss, x0=angles0, bounds=[(0, 2 * np.pi) for _ in range(angles0.shape[0])])
         if self.isQNSPSA:
             self.optimizer[1].pop("fidelity")
         return res
