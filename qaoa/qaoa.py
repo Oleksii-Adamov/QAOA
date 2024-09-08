@@ -442,19 +442,23 @@ class QAOA:
     def optimize(
         self,
         depth,
-        angles={"gamma": [0, 2 * np.pi, 20], "beta": [0, 2 * np.pi, 20]},
+        random_angles_init = False
+        angles={"gamma": [0, 2 * np.pi, 20], "beta": [0, 2 * np.pi, 20]}
     ):
         ## run local optimization by iteratively increasing the depth until depth p is reached
         while self.current_depth < depth:
             if self.current_depth == 0:
-                if self.Exp_sampled_p1 is None:
-                    self.sample_cost_landscape(angles=angles)
-                ind_Emin = np.unravel_index(
-                    np.argmin(self.Exp_sampled_p1, axis=None), self.Exp_sampled_p1.shape
-                )
-                angles0 = np.array(
-                    (self.gamma_grid[ind_Emin[1]], self.beta_grid[ind_Emin[0]])
-                )
+                if random_angles_init:
+                    angles0 = np.random.uniform(0, 2 * np.pi, 2 * (self.current_depth + 1))
+                else:
+                    if self.Exp_sampled_p1 is None:
+                        self.sample_cost_landscape(angles=angles)
+                    ind_Emin = np.unravel_index(
+                        np.argmin(self.Exp_sampled_p1, axis=None), self.Exp_sampled_p1.shape
+                    )
+                    angles0 = np.array(
+                        (self.gamma_grid[ind_Emin[1]], self.beta_grid[ind_Emin[0]])
+
             else:
                 gamma = self.get_gamma(self.current_depth)
                 beta = self.get_beta(self.current_depth)
@@ -468,6 +472,8 @@ class QAOA:
                 angles0 = np.zeros(2 * (self.current_depth + 1))
                 angles0[::2] = gamma_interp
                 angles0[1::2] = beta_interp
+
+            print(angles0)
 
             self.optimization_results[self.current_depth + 1] = OptResult(
                 self.current_depth + 1
