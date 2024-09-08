@@ -442,7 +442,7 @@ class QAOA:
     def optimize(
         self,
         depth,
-        random_angles_init = False
+        random_angles_init=False,
         angles={"gamma": [0, 2 * np.pi, 20], "beta": [0, 2 * np.pi, 20]}
     ):
         ## run local optimization by iteratively increasing the depth until depth p is reached
