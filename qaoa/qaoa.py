@@ -443,6 +443,7 @@ class QAOA:
         self,
         depth,
         random_angles_init=False,
+        n_optimization_d1=1,
         angles={"gamma": [0, 2 * np.pi, 20], "beta": [0, 2 * np.pi, 20]}
     ):
         ## run local optimization by iteratively increasing the depth until depth p is reached
@@ -481,7 +482,10 @@ class QAOA:
             # Create parameterized circuit at new depth
             self.createParameterizedCircuit(int(len(angles0) / 2))
 
-            res = self.local_opt(angles0)
+            if self.current_depth == 0:
+                for i in range (0, n_optimization_d1):
+                    print("optimization d=1 number", i)
+                    res = self.local_opt(angles0)
 
             self.samplecount_hists[self.current_depth + 1] = self.last_hist
 
@@ -524,7 +528,10 @@ class QAOA:
                 self.parameterized_circuit, sampler=Sampler()
             )
             opt = self.optimizer[0](**self.optimizer[1])
-        res = opt.minimize(self.loss, x0=angles0, bounds=[(0, 2 * np.pi) for _ in range(angles0.shape[0])])
+        print(opt.is_bounds_ignored, opt.is_bounds_required, opt.is_bounds_supported)
+        bnds = [(0, 2 * np.pi) for _ in range(angles0.shape[0])]
+        print(bnds)
+        res = opt.minimize(self.loss, x0=angles0, bounds=bnds)
         if self.isQNSPSA:
             self.optimizer[1].pop("fidelity")
         return res
