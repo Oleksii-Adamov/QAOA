@@ -8,7 +8,7 @@ from .base_problem import Problem
 
 
 class QUBO(Problem):
-    def __init__(self, Q=None, c=None, b=None) -> None:
+    def __init__(self, Q=None, c=None, b=None, custom_cost=None) -> None:
         super().__init__()
         """
         Implements the mapping from the parameters in params to the QUBO problem.
@@ -56,9 +56,19 @@ class QUBO(Problem):
         assert np.isscalar(b), "b is expected to be scalar, but is " + str(b)
         self.QUBO_b = b
 
+        self.custom_cost = custom_cost
+
     def cost(self, string):
         x = np.array(list(map(int, string)))
-        return -(x.T @ self.QUBO_Q @ x + self.QUBO_c.T @ x + self.QUBO_b)
+        print(x)
+        if custom_cost is None:
+            ret = -(x.T @ self.QUBO_Q @ x + self.QUBO_c.T @ x + self.QUBO_b)
+            print(ret)
+            return -(x.T @ self.QUBO_Q @ x + self.QUBO_c.T @ x + self.QUBO_b)
+        else:
+            ret = custom_cost(x)
+            print(ret)
+            return ret
 
     def create_circuit(self):
         if not self.lower_triangular_Q:
